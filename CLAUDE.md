@@ -49,5 +49,11 @@ npm run dev    # Start dev server on localhost:3000
 npm run build  # Production build (known Next.js 16 prerender bug on /_not-found, doesn't affect dev)
 ```
 
+## Issue Tracking
+- All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
+- Use `gh issue create` to file new issues with appropriate labels (`bug`, `security`, `improvement`)
+- Include severity (Critical/Warning/Suggestion), affected file paths, and a proposed fix
+- Prioritize `security` and `bug` labels before `improvement`
+
 ## GitHub
 - Repo: https://github.com/williawk/strava-dashboard
