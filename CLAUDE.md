@@ -4,14 +4,15 @@
 - **Next.js 16** (App Router) with TypeScript
 - **Tailwind CSS** for styling
 - **Recharts** for charts/graphs
+- **Zod** for runtime API response validation
 - **npm** as package manager
 
 ## Project Structure
 ```
 src/
   app/
-    page.tsx              # Landing page with "Connect with Strava" button
-    dashboard/page.tsx    # Main dashboard (client component)
+    page.tsx              # Landing page (server component, no client JS)
+    dashboard/page.tsx    # Main dashboard (client component, pre-sorts data for charts)
     api/
       auth/strava/route.ts    # Redirects to Strava OAuth
       auth/callback/route.ts  # Handles OAuth callback, stores tokens
@@ -25,8 +26,8 @@ src/
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
   lib/
-    strava.ts             # Strava API client (auth URLs, token exchange, fetch activities)
-    tokens.ts             # Cookie-based token storage with auto-refresh
+    strava.ts             # Strava API client with Zod-validated responses
+    tokens.ts             # Cookie-based token storage with auto-refresh and size checks
     format.ts             # Formatting helpers (distance, duration, speed, elevation, date)
 ```
 
@@ -38,7 +39,9 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 ## Key Decisions
 - Tokens stored in HTTP-only cookies (not localStorage) for security
 - OAuth CSRF protection via cryptographic state parameter with timing-safe comparison
-- Token exchange response validated before storage (prevents storing undefined tokens on Strava error)
+- Strava API responses validated at runtime with Zod schemas (tokens and activities)
+- Env vars validated lazily via `requireEnv()` with clear error messages (not module-level to avoid build failures)
+- Cookie size checked before write — warns at 75% of 4KB limit, errors at 100%
 - Auto token refresh when access token is within 60s of expiry
 - Token refresh uses promise-based mutex to serialize concurrent requests, with retry logic for cookie persistence (Strava refresh tokens are single-use)
 - Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
@@ -46,6 +49,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Dark mode via Tailwind `prefers-color-scheme`
 - Strava orange (#FC4C02) used as accent color via Tailwind arbitrary value `text-[#FC4C02]`
 - Personal records use config-driven array with type-safe `NumericField` union for field access
+- Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
 - Dashboard layout order: SummaryCards → PersonalRecords → Charts → RecentRides
 
 ## Development
