@@ -7,6 +7,7 @@ import RecentRides from "@/components/RecentRides";
 import DistanceChart from "@/components/DistanceChart";
 import SpeedChart from "@/components/SpeedChart";
 import ElevationChart from "@/components/ElevationChart";
+import PersonalRecords from "@/components/PersonalRecords";
 
 export default function Dashboard() {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
@@ -65,6 +66,8 @@ export default function Dashboard() {
         </div>
 
         <SummaryCards activities={activities} />
+
+        <PersonalRecords activities={activities} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DistanceChart activities={activities} />
