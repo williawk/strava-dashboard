@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { refreshAccessToken, type StravaTokens } from "./strava";
 
 const COOKIE_NAME = "strava_tokens";
+const MAX_COOKIE_SIZE = 4096;
 
 /** Module-level promise used to deduplicate concurrent token refresh requests. */
 let refreshPromise: Promise<string | null> | null = null;
@@ -87,7 +88,25 @@ export async function getValidAccessToken(): Promise<string | null> {
 
 export async function setTokens(tokens: StravaTokens) {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, JSON.stringify(tokens), {
+  const value = JSON.stringify(tokens);
+  const estimatedSize = new TextEncoder().encode(
+    `${COOKIE_NAME}=${value}`
+  ).length;
+
+  if (estimatedSize > MAX_COOKIE_SIZE) {
+    console.error(
+      `[tokens] CRITICAL: Cookie payload is ${estimatedSize} bytes, ` +
+        `exceeding the ${MAX_COOKIE_SIZE}-byte browser limit. ` +
+        `Token storage will silently fail.`
+    );
+  } else if (estimatedSize > MAX_COOKIE_SIZE * 0.75) {
+    console.warn(
+      `[tokens] WARNING: Cookie payload is ${estimatedSize} bytes, ` +
+        `approaching the ${MAX_COOKIE_SIZE}-byte browser limit.`
+    );
+  }
+
+  cookieStore.set(COOKIE_NAME, value, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
