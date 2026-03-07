@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { exchangeToken } from "@/lib/strava";
 import { setTokens } from "@/lib/tokens";
 
@@ -6,7 +7,12 @@ export async function GET(request: NextRequest) {
   const state = request.nextUrl.searchParams.get("state");
   const storedState = request.cookies.get("oauth_state")?.value;
 
-  if (!state || !storedState || state !== storedState) {
+  if (
+    !state ||
+    !storedState ||
+    state.length !== storedState.length ||
+    !timingSafeEqual(Buffer.from(state), Buffer.from(storedState))
+  ) {
     const res = NextResponse.redirect(new URL("/?error=invalid_state", request.url));
     res.cookies.delete("oauth_state");
     return res;
