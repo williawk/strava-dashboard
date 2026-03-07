@@ -18,16 +18,13 @@ interface Props {
 
 export default function SpeedChart({ activities }: Props) {
   const data = useMemo(() => {
-    return [...activities]
-      .sort((a, b) => a.start_date_local.localeCompare(b.start_date_local))
-      .slice(-30)
-      .map((a) => ({
-        date: new Date(a.start_date_local).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-        }),
-        speed: Math.round(a.average_speed * 3.6 * 10) / 10,
-      }));
+    return activities.map((a) => ({
+      date: new Date(a.start_date_local).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      }),
+      speed: Math.round(a.average_speed * 3.6 * 10) / 10,
+    }));
   }, [activities]);
 
   return (

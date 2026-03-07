@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type StravaActivity } from "@/lib/strava";
 import SummaryCards from "@/components/SummaryCards";
 import RecentRides from "@/components/RecentRides";
@@ -13,6 +13,14 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const sortedRecent = useMemo(
+    () =>
+      [...activities]
+        .sort((a, b) => a.start_date_local.localeCompare(b.start_date_local))
+        .slice(-30),
+    [activities]
+  );
 
   useEffect(() => {
     fetch("/api/activities")
@@ -71,10 +79,10 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DistanceChart activities={activities} />
-          <SpeedChart activities={activities} />
+          <SpeedChart activities={sortedRecent} />
         </div>
 
-        <ElevationChart activities={activities} />
+        <ElevationChart activities={sortedRecent} />
 
         <RecentRides activities={activities} />
       </div>
