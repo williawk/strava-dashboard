@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 const STRAVA_API_BASE = "https://www.strava.com/api/v3";
 const STRAVA_AUTH_BASE = "https://www.strava.com/oauth";
 
@@ -27,7 +29,8 @@ export async function exchangeToken(code: string): Promise<StravaTokens> {
     }),
   });
   if (!res.ok) throw new Error("Failed to exchange token");
-  return res.json();
+  const data = await res.json();
+  return StravaTokensSchema.parse(data);
 }
 
 export async function refreshAccessToken(refreshToken: string): Promise<StravaTokens> {
@@ -42,10 +45,11 @@ export async function refreshAccessToken(refreshToken: string): Promise<StravaTo
     }),
   });
   if (!res.ok) throw new Error("Failed to refresh token");
-  return res.json();
+  const data = await res.json();
+  return StravaTokensSchema.parse(data);
 }
 
-export async function getActivities(accessToken: string, page = 1, perPage = 100) {
+export async function getActivities(accessToken: string, page = 1, perPage = 100): Promise<StravaActivity[]> {
   const params = new URLSearchParams({
     page: String(page),
     per_page: String(perPage),
@@ -54,29 +58,32 @@ export async function getActivities(accessToken: string, page = 1, perPage = 100
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (!res.ok) throw new Error("Failed to fetch activities");
-  return res.json();
+  const data = await res.json();
+  return z.array(StravaActivitySchema).parse(data);
 }
 
-export interface StravaTokens {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-}
+const StravaTokensSchema = z.object({
+  access_token: z.string(),
+  refresh_token: z.string(),
+  expires_at: z.number(),
+});
+export type StravaTokens = z.infer<typeof StravaTokensSchema>;
 
-export interface StravaActivity {
-  id: number;
-  name: string;
-  type: string;
-  sport_type: string;
-  distance: number;
-  moving_time: number;
-  elapsed_time: number;
-  total_elevation_gain: number;
-  start_date: string;
-  start_date_local: string;
-  average_speed: number;
-  max_speed: number;
-  average_heartrate?: number;
-  max_heartrate?: number;
-  suffer_score?: number;
-}
+const StravaActivitySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  type: z.string(),
+  sport_type: z.string(),
+  distance: z.number(),
+  moving_time: z.number(),
+  elapsed_time: z.number(),
+  total_elevation_gain: z.number(),
+  start_date: z.string(),
+  start_date_local: z.string(),
+  average_speed: z.number(),
+  max_speed: z.number(),
+  average_heartrate: z.number().optional(),
+  max_heartrate: z.number().optional(),
+  suffer_score: z.number().optional(),
+});
+export type StravaActivity = z.infer<typeof StravaActivitySchema>;
