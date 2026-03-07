@@ -27,6 +27,13 @@ export async function GET(request: NextRequest) {
 
   try {
     const data = await exchangeToken(code);
+
+    if (!data.access_token || !data.refresh_token || !data.expires_at) {
+      const res = NextResponse.redirect(new URL("/?error=invalid_token_response", request.url));
+      res.cookies.delete("oauth_state");
+      return res;
+    }
+
     await setTokens({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
