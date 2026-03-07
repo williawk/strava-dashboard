@@ -3,9 +3,20 @@ import { exchangeToken } from "@/lib/strava";
 import { setTokens } from "@/lib/tokens";
 
 export async function GET(request: NextRequest) {
+  const state = request.nextUrl.searchParams.get("state");
+  const storedState = request.cookies.get("oauth_state")?.value;
+
+  if (!state || !storedState || state !== storedState) {
+    const res = NextResponse.redirect(new URL("/?error=invalid_state", request.url));
+    res.cookies.delete("oauth_state");
+    return res;
+  }
+
   const code = request.nextUrl.searchParams.get("code");
   if (!code) {
-    return NextResponse.redirect(new URL("/?error=no_code", request.url));
+    const res = NextResponse.redirect(new URL("/?error=no_code", request.url));
+    res.cookies.delete("oauth_state");
+    return res;
   }
 
   try {
@@ -15,8 +26,12 @@ export async function GET(request: NextRequest) {
       refresh_token: data.refresh_token,
       expires_at: data.expires_at,
     });
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const res = NextResponse.redirect(new URL("/dashboard", request.url));
+    res.cookies.delete("oauth_state");
+    return res;
   } catch {
-    return NextResponse.redirect(new URL("/?error=auth_failed", request.url));
+    const res = NextResponse.redirect(new URL("/?error=auth_failed", request.url));
+    res.cookies.delete("oauth_state");
+    return res;
   }
 }

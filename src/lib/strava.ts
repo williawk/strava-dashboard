@@ -4,12 +4,13 @@ const STRAVA_AUTH_BASE = "https://www.strava.com/oauth";
 export const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID!;
 export const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET!;
 
-export function getAuthUrl() {
+export function getAuthUrl(state: string) {
   const params = new URLSearchParams({
     client_id: STRAVA_CLIENT_ID,
     redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback`,
     response_type: "code",
     scope: "read,activity:read_all",
+    state,
   });
   return `${STRAVA_AUTH_BASE}/authorize?${params}`;
 }
