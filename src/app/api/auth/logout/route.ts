@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { clearTokens } from "@/lib/tokens";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   await clearTokens();
-  return NextResponse.redirect(new URL("/", process.env.NEXTAUTH_URL), 303);
+  return NextResponse.redirect(new URL("/", request.url), 303);
 }

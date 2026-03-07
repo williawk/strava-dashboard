@@ -1,10 +1,11 @@
 import { randomBytes } from "crypto";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthUrl } from "@/lib/strava";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const state = randomBytes(32).toString("hex");
-  const response = NextResponse.redirect(getAuthUrl(state));
+  const origin = new URL(request.url).origin;
+  const response = NextResponse.redirect(getAuthUrl(state, origin));
   response.cookies.set("oauth_state", state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

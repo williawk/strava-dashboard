@@ -33,7 +33,6 @@ src/
 Stored in `.env.local` (gitignored). See `.env.example` for template.
 - `STRAVA_CLIENT_ID` — from Strava API settings
 - `STRAVA_CLIENT_SECRET` — from Strava API settings
-- `NEXTAUTH_URL` — `http://localhost:3000`
 
 ## Key Decisions
 - Tokens stored in HTTP-only cookies (not localStorage) for security
