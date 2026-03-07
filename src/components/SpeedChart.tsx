@@ -47,7 +47,7 @@ export default function SpeedChart({ activities }: Props) {
                 border: "1px solid rgba(128,128,128,0.2)",
                 borderRadius: "8px",
               }}
-              formatter={(value) => [`${value} km/h`, "Avg Speed"]}
+              formatter={(value: number | undefined) => [`${value} km/h`, "Avg Speed"]}
             />
             <Line
               type="monotone"
