@@ -15,7 +15,7 @@ export function getAuthUrl(state: string) {
   return `${STRAVA_AUTH_BASE}/authorize?${params}`;
 }
 
-export async function exchangeToken(code: string) {
+export async function exchangeToken(code: string): Promise<StravaTokens> {
   const res = await fetch(`${STRAVA_AUTH_BASE}/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,7 +30,7 @@ export async function exchangeToken(code: string) {
   return res.json();
 }
 
-export async function refreshAccessToken(refreshToken: string) {
+export async function refreshAccessToken(refreshToken: string): Promise<StravaTokens> {
   const res = await fetch(`${STRAVA_AUTH_BASE}/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
