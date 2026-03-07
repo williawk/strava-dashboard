@@ -20,7 +20,7 @@ src/
   components/
     SummaryCards.tsx       # Total rides, distance, elevation, time
     RecentRides.tsx        # Table of last 20 rides
-    DistanceChart.tsx      # Weekly distance bar chart
+    DistanceChart.tsx      # Weekly distance bar chart (ISO week start via ms arithmetic)
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
   lib/
@@ -40,7 +40,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - OAuth CSRF protection via cryptographic state parameter with timing-safe comparison
 - Auto token refresh when access token is within 60s of expiry
 - Token refresh uses promise-based mutex to serialize concurrent requests, with retry logic for cookie persistence (Strava refresh tokens are single-use)
-- Filters activities to cycling only: Ride, VirtualRide, MountainBikeRide, GravelRide
+- Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
 - Dark mode via Tailwind `prefers-color-scheme`
 - Strava orange (#FC4C02) used as accent color
