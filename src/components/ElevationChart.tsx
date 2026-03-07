@@ -18,16 +18,13 @@ interface Props {
 
 export default function ElevationChart({ activities }: Props) {
   const data = useMemo(() => {
-    return [...activities]
-      .sort((a, b) => a.start_date_local.localeCompare(b.start_date_local))
-      .slice(-30)
-      .map((a) => ({
-        date: new Date(a.start_date_local).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-        }),
-        elevation: Math.round(a.total_elevation_gain),
-      }));
+    return activities.map((a) => ({
+      date: new Date(a.start_date_local).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      }),
+      elevation: Math.round(a.total_elevation_gain),
+    }));
   }, [activities]);
 
   return (
