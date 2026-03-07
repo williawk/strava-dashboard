@@ -21,10 +21,11 @@ export default function DistanceChart({ activities }: Props) {
     const weekly: Record<string, number> = {};
     activities.forEach((a) => {
       const date = new Date(a.start_date_local);
-      // Get ISO week start (Monday)
-      const day = date.getDay();
-      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-      const weekStart = new Date(date.setDate(diff));
+      // Get ISO week start (Monday) by subtracting days via milliseconds
+      // This avoids setDate() mutation bugs at month boundaries
+      const dayOfWeek = date.getDay();
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const weekStart = new Date(date.getTime() - daysToMonday * 86_400_000);
       const key = weekStart.toISOString().slice(0, 10);
       weekly[key] = (weekly[key] || 0) + a.distance / 1000;
     });
