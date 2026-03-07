@@ -15,7 +15,7 @@ src/
     api/
       auth/strava/route.ts    # Redirects to Strava OAuth
       auth/callback/route.ts  # Handles OAuth callback, stores tokens
-      auth/logout/route.ts    # Clears tokens, disconnects
+      auth/logout/route.ts    # Clears tokens, redirects with 303 (GET after POST)
       activities/route.ts     # Fetches cycling activities from Strava API
   components/
     SummaryCards.tsx       # Total rides, distance, elevation, time
@@ -38,6 +38,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 ## Key Decisions
 - Tokens stored in HTTP-only cookies (not localStorage) for security
 - OAuth CSRF protection via cryptographic state parameter with timing-safe comparison
+- Token exchange response validated before storage (prevents storing undefined tokens on Strava error)
 - Auto token refresh when access token is within 60s of expiry
 - Token refresh uses promise-based mutex to serialize concurrent requests, with retry logic for cookie persistence (Strava refresh tokens are single-use)
 - Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
