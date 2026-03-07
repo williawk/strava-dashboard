@@ -47,7 +47,7 @@ export default function ElevationChart({ activities }: Props) {
                 border: "1px solid rgba(128,128,128,0.2)",
                 borderRadius: "8px",
               }}
-              formatter={(value) => [`${value} m`, "Elevation"]}
+              formatter={(value: number | undefined) => [`${value} m`, "Elevation"]}
             />
             <Area
               type="monotone"
