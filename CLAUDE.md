@@ -19,6 +19,7 @@ src/
       activities/route.ts     # Fetches cycling activities from Strava API
   components/
     SummaryCards.tsx       # Total rides, distance, elevation, time
+    PersonalRecords.tsx   # All-time bests (longest ride, most elevation, fastest speed, longest time)
     RecentRides.tsx        # Table of last 20 rides
     DistanceChart.tsx      # Weekly distance bar chart (ISO week start via ms arithmetic)
     SpeedChart.tsx         # Average speed trend line chart
@@ -43,7 +44,9 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
 - Dark mode via Tailwind `prefers-color-scheme`
-- Strava orange (#FC4C02) used as accent color
+- Strava orange (#FC4C02) used as accent color via Tailwind arbitrary value `text-[#FC4C02]`
+- Personal records use config-driven array with type-safe `NumericField` union for field access
+- Dashboard layout order: SummaryCards → PersonalRecords → Charts → RecentRides
 
 ## Development
 ```bash
