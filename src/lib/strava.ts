@@ -3,12 +3,28 @@ import { z } from "zod";
 const STRAVA_API_BASE = "https://www.strava.com/api/v3";
 const STRAVA_AUTH_BASE = "https://www.strava.com/oauth";
 
-export const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID!;
-export const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET!;
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(
+      `Missing required environment variable: ${name}. ` +
+      `Add it to .env.local (see .env.example for reference).`
+    );
+  }
+  return value;
+}
+
+export function getClientId() {
+  return requireEnv("STRAVA_CLIENT_ID");
+}
+
+export function getClientSecret() {
+  return requireEnv("STRAVA_CLIENT_SECRET");
+}
 
 export function getAuthUrl(state: string, origin: string) {
   const params = new URLSearchParams({
-    client_id: STRAVA_CLIENT_ID,
+    client_id: getClientId(),
     redirect_uri: `${origin}/api/auth/callback`,
     response_type: "code",
     scope: "read,activity:read_all",
@@ -22,8 +38,8 @@ export async function exchangeToken(code: string): Promise<StravaTokens> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      client_id: STRAVA_CLIENT_ID,
-      client_secret: STRAVA_CLIENT_SECRET,
+      client_id: getClientId(),
+      client_secret: getClientSecret(),
       code,
       grant_type: "authorization_code",
     }),
@@ -38,8 +54,8 @@ export async function refreshAccessToken(refreshToken: string): Promise<StravaTo
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      client_id: STRAVA_CLIENT_ID,
-      client_secret: STRAVA_CLIENT_SECRET,
+      client_id: getClientId(),
+      client_secret: getClientSecret(),
       grant_type: "refresh_token",
       refresh_token: refreshToken,
     }),
