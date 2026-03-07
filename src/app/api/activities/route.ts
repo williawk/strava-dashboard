@@ -19,7 +19,7 @@ export async function GET() {
 
     // Filter for cycling activities
     const rides = allActivities.filter(
-      (a) => a.type === "Ride" || a.sport_type === "MountainBikeRide" || a.sport_type === "GravelRide"
+      (a) => a.type === "Ride" || a.type === "VirtualRide" || a.sport_type === "MountainBikeRide" || a.sport_type === "GravelRide"
     );
 
     return NextResponse.json(rides);

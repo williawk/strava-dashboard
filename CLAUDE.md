@@ -39,7 +39,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Tokens stored in HTTP-only cookies (not localStorage) for security
 - OAuth CSRF protection via cryptographic state parameter with timing-safe comparison
 - Auto token refresh when access token is within 60s of expiry
-- Filters activities to cycling only: Ride, MountainBikeRide, GravelRide
+- Filters activities to cycling only: Ride, VirtualRide, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
 - Dark mode via Tailwind `prefers-color-scheme`
 - Strava orange (#FC4C02) used as accent color
