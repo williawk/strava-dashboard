@@ -37,6 +37,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 
 ## Key Decisions
 - Tokens stored in HTTP-only cookies (not localStorage) for security
+- OAuth CSRF protection via cryptographic state parameter with timing-safe comparison
 - Auto token refresh when access token is within 60s of expiry
 - Filters activities to cycling only: Ride, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
@@ -45,7 +46,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 
 ## Development
 ```bash
-npm run dev    # Start dev server on localhost:3000
+npm run dev    # Start dev server on localhost:3000 (uses webpack; Turbopack has tailwindcss resolution issues)
 npm run build  # Production build (known Next.js 16 prerender bug on /_not-found, doesn't affect dev)
 ```
 
