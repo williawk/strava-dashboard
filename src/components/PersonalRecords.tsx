@@ -13,7 +13,7 @@ interface Props {
   activities: StravaActivity[];
 }
 
-type NumericField = "distance" | "moving_time" | "elapsed_time" | "total_elevation_gain" | "average_speed" | "max_speed";
+type NumericField = "distance" | "moving_time" | "total_elevation_gain" | "average_speed";
 
 function findMax(
   activities: StravaActivity[],
@@ -34,7 +34,7 @@ const records = [
 
 export default function PersonalRecords({ activities }: Props) {
   if (activities.length === 0) {
-    return <p className="text-foreground/50">No records yet.</p>;
+    return <p className="text-foreground/40 text-center py-8">No records yet.</p>;
   }
 
   return (
@@ -51,10 +51,10 @@ export default function PersonalRecords({ activities }: Props) {
               className="bg-foreground/5 rounded-xl p-5 space-y-1"
             >
               <p className="text-sm text-foreground/50">{label}</p>
-              <p className="text-2xl font-bold" style={{ color: "#FC4C02" }}>
+              <p className="text-2xl font-bold text-[#FC4C02]">
                 {format(activity[field])}
               </p>
-              <p className="text-sm text-foreground truncate">{activity.name}</p>
+              <p className="text-sm text-foreground truncate" title={activity.name}>{activity.name}</p>
               <p className="text-xs text-foreground/40">{formatDate(activity.start_date_local)}</p>
             </div>
           );
