@@ -31,10 +31,13 @@ src/
     DistanceChart.tsx      # Weekly distance bar chart (ISO week start via ms arithmetic)
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
+    RideHeatmap.tsx       # Leaflet map with all ride routes as polylines
   lib/
     strava.ts             # Strava API client with Zod-validated responses
     tokens.ts             # Cookie-based token storage with auto-refresh and size checks
     format.ts             # Formatting helpers (distance, duration, speed, elevation, date)
+    polyline.ts           # Google encoded polyline decoder
+    __tests__/            # Vitest unit tests
 ```
 
 ## Environment Variables
@@ -56,7 +59,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Strava orange (#FC4C02) used as accent color via Tailwind arbitrary value `text-[#FC4C02]`
 - Personal records use config-driven array with type-safe `NumericField` union for field access
 - Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
-- Dashboard layout order: SummaryCards → PersonalRecords → Charts → RecentRides
+- Dashboard layout order: SummaryCards → PersonalRecords → Charts → RideHeatmap → RecentRides
 - Dashboard uses `next/link` `<Link>` for internal navigation (enforced by `@next/next/no-html-link-for-pages` lint rule)
 
 ## Development
@@ -65,6 +68,8 @@ npm run dev        # Start dev server on localhost:3000 (uses webpack; Turbopack
 npm run build      # Production build (known Next.js 16 prerender bug on /_not-found, doesn't affect dev)
 npm run typecheck  # TypeScript type checking (tsc --noEmit)
 npm run lint       # ESLint
+npm run test       # Vitest unit tests
+npm run test:watch # Vitest in watch mode
 ```
 
 ## CI/CD
@@ -75,6 +80,16 @@ npm run lint       # ESLint
 - GitHub Actions PRs are kept separate (only two actions, independent of each other)
 - **Branch protection** on `master`: requires `build` status check to pass (strict mode — branch must be up-to-date), no PR reviews required, enforce admins disabled
 - Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
+
+## Ride Heatmap ([#18](https://github.com/williawk/strava-dashboard/issues/18))
+- Leaflet (react-leaflet) with Canvas renderer, free CartoDB tiles (no API key)
+- `src/lib/polyline.ts` decodes Google encoded polylines (~20 lines, shift overflow guard, try/catch safety)
+- `src/components/RideHeatmap.tsx` renders all routes as Strava orange (#FC4C02) polylines at 0.6 opacity
+- `useSyncExternalStore` for dark mode detection; `TileLayer key` forces tile remount on theme change
+- `next/dynamic` with `ssr: false` to avoid Leaflet SSR crashes; loading skeleton prevents layout shift
+- Sticky tooltips show ride name, distance, and date using existing format helpers
+- Layout: full-width between ElevationChart and RecentRides, receives full `activities` array
+- Zod schema: `map.summary_polyline` is `.nullable().optional()` (null = no GPS, undefined = field missing)
 
 ## Issue Tracking
 - All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
