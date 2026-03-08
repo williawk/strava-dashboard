@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { type StravaActivity } from "@/lib/strava";
 import SummaryCards from "@/components/SummaryCards";
 import RecentRides from "@/components/RecentRides";
@@ -52,7 +53,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <p className="text-red-500">{error}</p>
-          <a href="/" className="text-[#FC4C02] underline">Try reconnecting</a>
+          <Link href="/" className="text-[#FC4C02] underline">Try reconnecting</Link>
         </div>
       </div>
     );
