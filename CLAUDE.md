@@ -54,6 +54,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Personal records use config-driven array with type-safe `NumericField` union for field access
 - Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
 - Dashboard layout order: SummaryCards → PersonalRecords → Charts → RecentRides
+- Dashboard uses `next/link` `<Link>` for internal navigation (enforced by `@next/next/no-html-link-for-pages` lint rule)
 
 ## Development
 ```bash
@@ -65,8 +66,10 @@ npm run lint       # ESLint
 
 ## CI/CD
 - **GitHub Actions** runs on every push and PR to `master`: typecheck → lint → build
-- Workflow at `.github/workflows/ci.yml` with SHA-pinned actions, `contents: read` permissions, and concurrency control (stale runs auto-cancel)
+- Workflow at `.github/workflows/ci.yml` with SHA-pinned actions (v6 checkout, v6 setup-node), `contents: read` permissions, and concurrency control (stale runs auto-cancel)
 - **Dependabot** (`.github/dependabot.yml`) opens weekly PRs for npm and GitHub Actions dependency updates (max 5 open PRs per ecosystem)
+- Dependabot PRs for `react` and `react-dom` must be merged together (peer dependency conflict if only one is updated)
+- Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
 
 ## Issue Tracking
 - All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
