@@ -69,7 +69,7 @@ npm run lint       # ESLint
 - Workflow at `.github/workflows/ci.yml` with SHA-pinned actions (v6 checkout, v6 setup-node), `contents: read` permissions, and concurrency control (stale runs auto-cancel)
 - **Dependabot** (`.github/dependabot.yml`) opens weekly PRs for npm and GitHub Actions dependency updates (max 5 open PRs per ecosystem)
 - React ecosystem packages (`react`, `react-dom`, `@types/react`, `@types/react-dom`) are grouped into a single PR to avoid peer dependency conflicts
-- All GitHub Actions are grouped into a single PR
+- GitHub Actions PRs are kept separate (only two actions, independent of each other)
 - **Branch protection** on `master`: requires `build` status check to pass (strict mode — branch must be up-to-date), no PR reviews required, enforce admins disabled
 - Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
 
