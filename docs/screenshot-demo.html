@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cycling Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --background: #ffffff;
+      --foreground: #171717;
+      --foreground-5: rgba(23, 23, 23, 0.05);
+      --foreground-10: rgba(23, 23, 23, 0.1);
+      --foreground-40: rgba(23, 23, 23, 0.4);
+      --foreground-50: rgba(23, 23, 23, 0.5);
+      --accent: #FC4C02;
+      --grid-color: rgba(23, 23, 23, 0.1);
+      --tooltip-bg: #ffffff;
+      --tooltip-border: rgba(128, 128, 128, 0.2);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+        --foreground-5: rgba(237, 237, 237, 0.05);
+        --foreground-10: rgba(237, 237, 237, 0.1);
+        --foreground-40: rgba(237, 237, 237, 0.4);
+        --foreground-50: rgba(237, 237, 237, 0.5);
+        --grid-color: rgba(237, 237, 237, 0.1);
+        --tooltip-bg: #0a0a0a;
+        --tooltip-border: rgba(128, 128, 128, 0.2);
+      }
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 40px;
+      }
+    }
+
+    .section-gap {
+      margin-top: 32px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .disconnect-btn {
+      font-size: 0.875rem;
+      color: var(--foreground-50);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+
+    .disconnect-btn:hover {
+      color: var(--foreground);
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--foreground-5);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .card-label {
+      font-size: 0.875rem;
+      color: var(--foreground-50);
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .card-value--accent {
+      color: var(--accent);
+    }
+
+    .card-name {
+      font-size: 0.875rem;
+      color: var(--foreground);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-date {
+      font-size: 0.75rem;
+      color: var(--foreground-40);
+      margin-top: 2px;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 16px;
+    }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 1024px) {
+      .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .chart-card {
+      background: var(--foreground-5);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .chart-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 16px;
+    }
+
+    .chart-wrapper {
+      height: 300px;
+      position: relative;
+    }
+
+    /* Table */
+    .table-card {
+      background: var(--foreground-5);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    .table-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      font-size: 0.875rem;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      color: var(--foreground-50);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--foreground-10);
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    thead th.text-right {
+      text-align: right;
+    }
+
+    tbody td {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--foreground-5);
+      color: var(--foreground);
+      white-space: nowrap;
+    }
+
+    tbody td.text-right {
+      text-align: right;
+    }
+
+    /* Add right padding to all columns except the last */
+    th:not(:last-child),
+    td:not(:last-child) {
+      padding-right: 16px;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Cycling Dashboard</h1>
+      <button class="disconnect-btn">Disconnect</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="cards-grid section-gap">
+      <div class="card">
+        <p class="card-label">Total Rides</p>
+        <p class="card-value">47</p>
+      </div>
+      <div class="card">
+        <p class="card-label">Total Distance</p>
+        <p class="card-value">1,842.6 km</p>
+      </div>
+      <div class="card">
+        <p class="card-label">Total Elevation</p>
+        <p class="card-value">18,934 m</p>
+      </div>
+      <div class="card">
+        <p class="card-label">Total Time</p>
+        <p class="card-value">96h 12m</p>
+      </div>
+    </div>
+
+    <!-- Personal Records -->
+    <div class="section-gap">
+      <h2 class="section-title">Personal Records</h2>
+      <div class="cards-grid">
+        <div class="card">
+          <p class="card-label">Longest Ride</p>
+          <p class="card-value card-value--accent">142.3 km</p>
+          <p class="card-name" title="Gran Fondo Challenge">Gran Fondo Challenge</p>
+          <p class="card-date">15 Jun 2025</p>
+        </div>
+        <div class="card">
+          <p class="card-label">Most Elevation</p>
+          <p class="card-value card-value--accent">2,156 m</p>
+          <p class="card-name" title="Mountain Pass Loop">Mountain Pass Loop</p>
+          <p class="card-date">3 Aug 2025</p>
+        </div>
+        <div class="card">
+          <p class="card-label">Fastest Avg Speed</p>
+          <p class="card-value card-value--accent">34.2 km/h</p>
+          <p class="card-name" title="Flat Circuit Sprint">Flat Circuit Sprint</p>
+          <p class="card-date">22 Sep 2025</p>
+        </div>
+        <div class="card">
+          <p class="card-label">Longest Moving Time</p>
+          <p class="card-value card-value--accent">5h 48m</p>
+          <p class="card-name" title="Century Ride Attempt">Century Ride Attempt</p>
+          <p class="card-date">10 Jul 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid section-gap">
+      <div class="chart-card">
+        <h2>Distance per Week</h2>
+        <div class="chart-wrapper">
+          <canvas id="distanceChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Average Speed Trend</h2>
+        <div class="chart-wrapper">
+          <canvas id="speedChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Elevation Chart (full width) -->
+    <div class="chart-card section-gap">
+      <h2>Elevation Gain per Ride</h2>
+      <div class="chart-wrapper">
+        <canvas id="elevationChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Rides Table -->
+    <div class="table-card section-gap">
+      <h2>Recent Rides</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th class="text-right">Distance</th>
+            <th class="text-right">Duration</th>
+            <th class="text-right">Avg Speed</th>
+            <th class="text-right">Elevation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>5 Mar 2026</td>
+            <td>Morning Coffee Ride</td>
+            <td class="text-right">32.4 km</td>
+            <td class="text-right">1h 12m</td>
+            <td class="text-right">27.0 km/h</td>
+            <td class="text-right">234 m</td>
+          </tr>
+          <tr>
+            <td>3 Mar 2026</td>
+            <td>Interval Training</td>
+            <td class="text-right">28.1 km</td>
+            <td class="text-right">58m</td>
+            <td class="text-right">29.1 km/h</td>
+            <td class="text-right">156 m</td>
+          </tr>
+          <tr>
+            <td>1 Mar 2026</td>
+            <td>Weekend Long Ride</td>
+            <td class="text-right">85.2 km</td>
+            <td class="text-right">3h 05m</td>
+            <td class="text-right">27.6 km/h</td>
+            <td class="text-right">678 m</td>
+          </tr>
+          <tr>
+            <td>27 Feb 2026</td>
+            <td>Hill Repeats</td>
+            <td class="text-right">22.7 km</td>
+            <td class="text-right">52m</td>
+            <td class="text-right">26.2 km/h</td>
+            <td class="text-right">445 m</td>
+          </tr>
+          <tr>
+            <td>25 Feb 2026</td>
+            <td>Recovery Spin</td>
+            <td class="text-right">18.3 km</td>
+            <td class="text-right">42m</td>
+            <td class="text-right">26.1 km/h</td>
+            <td class="text-right">89 m</td>
+          </tr>
+          <tr>
+            <td>23 Feb 2026</td>
+            <td>Group Ride</td>
+            <td class="text-right">62.5 km</td>
+            <td class="text-right">2h 15m</td>
+            <td class="text-right">27.8 km/h</td>
+            <td class="text-right">512 m</td>
+          </tr>
+          <tr>
+            <td>21 Feb 2026</td>
+            <td>Solo Tempo Ride</td>
+            <td class="text-right">45.8 km</td>
+            <td class="text-right">1h 38m</td>
+            <td class="text-right">28.0 km/h</td>
+            <td class="text-right">267 m</td>
+          </tr>
+          <tr>
+            <td>19 Feb 2026</td>
+            <td>Commute</td>
+            <td class="text-right">15.2 km</td>
+            <td class="text-right">35m</td>
+            <td class="text-right">26.1 km/h</td>
+            <td class="text-right">78 m</td>
+          </tr>
+          <tr>
+            <td>17 Feb 2026</td>
+            <td>Coastal Loop</td>
+            <td class="text-right">73.4 km</td>
+            <td class="text-right">2h 42m</td>
+            <td class="text-right">27.2 km/h</td>
+            <td class="text-right">389 m</td>
+          </tr>
+          <tr>
+            <td>15 Feb 2026</td>
+            <td>Evening Spin</td>
+            <td class="text-right">21.6 km</td>
+            <td class="text-right">48m</td>
+            <td class="text-right">27.0 km/h</td>
+            <td class="text-right">134 m</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Detect dark mode
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      const foreground = isDark ? '#ededed' : '#171717';
+      const foreground50 = isDark ? 'rgba(237, 237, 237, 0.5)' : 'rgba(23, 23, 23, 0.5)';
+      const gridColor = isDark ? 'rgba(237, 237, 237, 0.1)' : 'rgba(23, 23, 23, 0.1)';
+      const tooltipBg = isDark ? '#0a0a0a' : '#ffffff';
+      const tooltipBorder = 'rgba(128, 128, 128, 0.2)';
+      const accent = '#FC4C02';
+
+      // Shared chart defaults
+      Chart.defaults.font.family = "system-ui, -apple-system, sans-serif";
+      Chart.defaults.font.size = 12;
+      Chart.defaults.color = foreground50;
+
+      const sharedScaleOptions = {
+        grid: {
+          color: gridColor,
+          borderDash: [3, 3],
+          drawBorder: false,
+        },
+        ticks: {
+          color: foreground50,
+          font: { size: 12 },
+        },
+        border: {
+          display: false,
+        },
+      };
+
+      const sharedTooltipOptions = {
+        backgroundColor: tooltipBg,
+        titleColor: foreground,
+        bodyColor: foreground,
+        borderColor: tooltipBorder,
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 10,
+        displayColors: false,
+      };
+
+      // Distance per Week (Bar Chart)
+      const distanceLabels = [
+        '6 Jan', '13 Jan', '20 Jan', '27 Jan',
+        '3 Feb', '10 Feb', '17 Feb', '24 Feb',
+        '3 Mar', '10 Mar', '17 Mar', '24 Mar'
+      ];
+      const distanceData = [65, 82, 45, 91, 73, 58, 104, 67, 88, 52, 95, 78];
+
+      new Chart(document.getElementById('distanceChart'), {
+        type: 'bar',
+        data: {
+          labels: distanceLabels,
+          datasets: [{
+            data: distanceData,
+            backgroundColor: accent,
+            borderRadius: { topLeft: 4, topRight: 4 },
+            borderSkipped: 'bottom',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              ...sharedTooltipOptions,
+              callbacks: {
+                label: function (ctx) {
+                  return ctx.parsed.y + ' km';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ...sharedScaleOptions,
+              grid: { ...sharedScaleOptions.grid, display: false },
+            },
+            y: {
+              ...sharedScaleOptions,
+              ticks: {
+                ...sharedScaleOptions.ticks,
+                callback: function (value) { return value + ' km'; }
+              },
+              beginAtZero: true,
+            }
+          }
+        }
+      });
+
+      // Average Speed Trend (Line Chart)
+      const speedLabels = [
+        '1 Dec', '5 Dec', '12 Dec', '18 Dec', '24 Dec',
+        '2 Jan', '8 Jan', '15 Jan', '22 Jan',
+        '1 Feb', '8 Feb', '15 Feb', '22 Feb',
+        '1 Mar', '5 Mar'
+      ];
+      const speedData = [26.2, 27.1, 25.8, 28.3, 27.5, 26.9, 28.8, 27.2, 29.1, 28.0, 27.8, 29.5, 28.4, 30.1, 29.3];
+
+      new Chart(document.getElementById('speedChart'), {
+        type: 'line',
+        data: {
+          labels: speedLabels,
+          datasets: [{
+            data: speedData,
+            borderColor: accent,
+            backgroundColor: accent,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: accent,
+            pointBorderColor: accent,
+            tension: 0.3,
+            fill: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              ...sharedTooltipOptions,
+              callbacks: {
+                label: function (ctx) {
+                  return ctx.parsed.y + ' km/h';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ...sharedScaleOptions,
+              grid: { ...sharedScaleOptions.grid, display: false },
+            },
+            y: {
+              ...sharedScaleOptions,
+              ticks: {
+                ...sharedScaleOptions.ticks,
+                callback: function (value) { return value + ' km/h'; }
+              },
+            }
+          }
+        }
+      });
+
+      // Elevation Gain per Ride (Area Chart)
+      const elevationLabels = [
+        '1 Dec', '5 Dec', '12 Dec', '18 Dec', '24 Dec',
+        '2 Jan', '8 Jan', '15 Jan', '22 Jan',
+        '1 Feb', '8 Feb', '15 Feb', '22 Feb',
+        '1 Mar', '5 Mar'
+      ];
+      const elevationData = [234, 456, 189, 567, 312, 423, 678, 345, 512, 267, 489, 623, 378, 534, 445];
+
+      new Chart(document.getElementById('elevationChart'), {
+        type: 'line',
+        data: {
+          labels: elevationLabels,
+          datasets: [{
+            data: elevationData,
+            borderColor: accent,
+            backgroundColor: accent + '26', // ~15% opacity hex
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: accent,
+            pointBorderColor: accent,
+            tension: 0.3,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              ...sharedTooltipOptions,
+              callbacks: {
+                label: function (ctx) {
+                  return ctx.parsed.y + ' m';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ...sharedScaleOptions,
+              grid: { ...sharedScaleOptions.grid, display: false },
+            },
+            y: {
+              ...sharedScaleOptions,
+              ticks: {
+                ...sharedScaleOptions.ticks,
+                callback: function (value) { return value + ' m'; }
+              },
+              beginAtZero: true,
+            }
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
