@@ -76,6 +76,21 @@ describe("StravaActivitySchema", () => {
     expect(() => StravaActivitySchema.parse(input)).toThrow();
   });
 
+  it("rejects an empty object (missing required fields)", () => {
+    expect(() => StravaActivitySchema.parse({})).toThrow();
+  });
+
+  it("rejects when a required field is missing", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { distance, ...missingDistance } = makeBaseActivity();
+    expect(() => StravaActivitySchema.parse(missingDistance)).toThrow();
+  });
+
+  it("rejects wrong types for required fields", () => {
+    expect(() => StravaActivitySchema.parse({ ...makeBaseActivity(), id: "not-a-number" })).toThrow();
+    expect(() => StravaActivitySchema.parse({ ...makeBaseActivity(), distance: "forty" })).toThrow();
+  });
+
   it("parses a full activity with all optional fields present", () => {
     const input = {
       ...makeBaseActivity(),

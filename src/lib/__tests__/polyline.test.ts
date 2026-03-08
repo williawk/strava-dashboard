@@ -9,17 +9,14 @@ describe("decodePolyline", () => {
 
     expect(result).toHaveLength(3);
 
-    // Point 1: approximately [38.5, -120.2]
-    expect(result[0][0]).toBeCloseTo(38.5, 1);
-    expect(result[0][1]).toBeCloseTo(-120.2, 1);
+    expect(result[0][0]).toBeCloseTo(38.5, 5);
+    expect(result[0][1]).toBeCloseTo(-120.2, 5);
 
-    // Point 2: approximately [40.7, -120.95]
-    expect(result[1][0]).toBeCloseTo(40.7, 1);
-    expect(result[1][1]).toBeCloseTo(-120.95, 1);
+    expect(result[1][0]).toBeCloseTo(40.7, 5);
+    expect(result[1][1]).toBeCloseTo(-120.95, 5);
 
-    // Point 3: approximately [43.252, -126.453]
-    expect(result[2][0]).toBeCloseTo(43.252, 1);
-    expect(result[2][1]).toBeCloseTo(-126.453, 1);
+    expect(result[2][0]).toBeCloseTo(43.252, 5);
+    expect(result[2][1]).toBeCloseTo(-126.453, 5);
   });
 
   it("returns an empty array for an empty string", () => {
@@ -80,18 +77,16 @@ describe("decodePolyline", () => {
     expect(decodePolyline(pathological)).toEqual([]);
   });
 
-  it("handles a longer real-world polyline without errors", () => {
-    // A slightly longer encoded polyline (5 points from the canonical + deltas)
-    const encoded = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
+  it("correctly applies delta decoding for multi-point polylines", () => {
+    // Use first 2 points from canonical: [38.5, -120.2] and [40.7, -120.95]
+    // Second point is encoded as delta from the first
+    const encoded = "_p~iF~ps|U_ulLnnqC";
     const result = decodePolyline(encoded);
 
-    // Every point should be a [lat, lng] tuple with two numbers
-    for (const point of result) {
-      expect(point).toHaveLength(2);
-      expect(typeof point[0]).toBe("number");
-      expect(typeof point[1]).toBe("number");
-      expect(Number.isFinite(point[0])).toBe(true);
-      expect(Number.isFinite(point[1])).toBe(true);
-    }
+    expect(result).toHaveLength(2);
+    expect(result[0][0]).toBeCloseTo(38.5, 5);
+    expect(result[0][1]).toBeCloseTo(-120.2, 5);
+    expect(result[1][0]).toBeCloseTo(40.7, 5);
+    expect(result[1][1]).toBeCloseTo(-120.95, 5);
   });
 });

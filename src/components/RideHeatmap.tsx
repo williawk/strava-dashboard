@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Polyline, Tooltip } from "react-leaflet";
 import { latLngBounds, latLng } from "leaflet";
 import { type StravaActivity } from "@/lib/strava";
@@ -48,9 +49,19 @@ export default function RideHeatmap({ activities }: { activities: StravaActivity
   }, [activities]);
 
   const bounds = useMemo(() => {
-    const allPoints = routes.flatMap((r) => r.positions);
-    if (allPoints.length === 0) return null;
-    return latLngBounds(allPoints.map(([lat, lng]) => latLng(lat, lng)));
+    const b = latLngBounds([]);
+    for (const route of routes) {
+      for (const [lat, lng] of route.positions) {
+        b.extend(latLng(lat, lng));
+      }
+    }
+    if (!b.isValid()) return null;
+    // Pad single-point bounds to avoid max zoom
+    if (b.getNorthEast().equals(b.getSouthWest())) {
+      b.extend(latLng(b.getNorthEast().lat + 0.01, b.getNorthEast().lng + 0.01));
+      b.extend(latLng(b.getSouthWest().lat - 0.01, b.getSouthWest().lng - 0.01));
+    }
+    return b;
   }, [routes]);
 
   if (routes.length === 0 || !bounds) {
@@ -79,7 +90,7 @@ export default function RideHeatmap({ activities }: { activities: StravaActivity
         <MapContainer
           bounds={bounds}
           preferCanvas={true}
-          scrollWheelZoom={true}
+          scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
