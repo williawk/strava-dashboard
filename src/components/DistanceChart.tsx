@@ -56,7 +56,7 @@ export default function DistanceChart({ activities }: Props) {
                 border: "1px solid rgba(128,128,128,0.2)",
                 borderRadius: "8px",
               }}
-              formatter={(value: string | number | undefined) => [`${Number(value)} km`, "Distance"]}
+              formatter={((value: number) => [`${value} km`, "Distance"]) as never}
             />
             <Bar dataKey="km" fill="#FC4C02" radius={[4, 4, 0, 0]} />
           </BarChart>
