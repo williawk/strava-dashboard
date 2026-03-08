@@ -12,6 +12,9 @@
 .github/
   workflows/ci.yml        # CI pipeline: typecheck, lint, build
   dependabot.yml           # Automated dependency update PRs
+docs/
+  dashboard-preview.png   # README screenshot of dashboard with dummy data
+  screenshot-demo.html    # Standalone HTML demo used to generate the screenshot
 src/
   app/
     page.tsx              # Landing page (server component, no client JS)
