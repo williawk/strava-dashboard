@@ -9,6 +9,9 @@
 
 ## Project Structure
 ```
+.github/
+  workflows/ci.yml        # CI pipeline: typecheck, lint, build
+  dependabot.yml           # Automated dependency update PRs
 src/
   app/
     page.tsx              # Landing page (server component, no client JS)
@@ -54,9 +57,16 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 
 ## Development
 ```bash
-npm run dev    # Start dev server on localhost:3000 (uses webpack; Turbopack has tailwindcss resolution issues)
-npm run build  # Production build (known Next.js 16 prerender bug on /_not-found, doesn't affect dev)
+npm run dev        # Start dev server on localhost:3000 (uses webpack; Turbopack has tailwindcss resolution issues)
+npm run build      # Production build (known Next.js 16 prerender bug on /_not-found, doesn't affect dev)
+npm run typecheck  # TypeScript type checking (tsc --noEmit)
+npm run lint       # ESLint
 ```
+
+## CI/CD
+- **GitHub Actions** runs on every push and PR to `master`: typecheck → lint → build
+- Workflow at `.github/workflows/ci.yml` with SHA-pinned actions, `contents: read` permissions, and concurrency control (stale runs auto-cancel)
+- **Dependabot** (`.github/dependabot.yml`) opens weekly PRs for npm and GitHub Actions dependency updates (max 5 open PRs per ecosystem)
 
 ## Issue Tracking
 - All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
