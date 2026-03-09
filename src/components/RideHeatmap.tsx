@@ -90,7 +90,7 @@ export default function RideHeatmap({ activities }: { activities: StravaActivity
         <MapContainer
           bounds={bounds}
           preferCanvas={true}
-          scrollWheelZoom={false}
+          scrollWheelZoom={true}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
