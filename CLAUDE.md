@@ -32,7 +32,7 @@ src/
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
     ThemeProvider.tsx      # Client wrapper for next-themes provider
-    ThemeToggle.tsx        # Three-state theme toggle (system/light/dark)
+    ThemeToggle.tsx        # Dark/light theme toggle with sun/moon icons
     RideHeatmap.tsx       # Leaflet map with all ride routes as polylines
   lib/
     strava.ts             # Strava API client with Zod-validated responses
@@ -57,7 +57,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Token refresh uses promise-based mutex to serialize concurrent requests, with retry logic for cookie persistence (Strava refresh tokens are single-use)
 - Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
-- Dark mode via `next-themes` with class-based toggling (`darkMode: 'selector'` via `@custom-variant`), three-state cycle (system/light/dark), persisted to localStorage
+- Dark mode via `next-themes` with class-based toggling (`darkMode: 'selector'` via `@custom-variant`), two-state toggle (dark/light, dark default), persisted to localStorage
 - Strava orange (#FC4C02) used as accent color via Tailwind arbitrary value `text-[#FC4C02]`
 - Personal records use config-driven array with type-safe `NumericField` union for field access
 - Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
