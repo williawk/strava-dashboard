@@ -85,7 +85,7 @@ const StravaTokensSchema = z.object({
 });
 export type StravaTokens = z.infer<typeof StravaTokensSchema>;
 
-const StravaActivitySchema = z.object({
+export const StravaActivitySchema = z.object({
   id: z.number(),
   name: z.string(),
   type: z.string(),
@@ -101,5 +101,8 @@ const StravaActivitySchema = z.object({
   average_heartrate: z.number().optional(),
   max_heartrate: z.number().optional(),
   suffer_score: z.number().optional(),
+  map: z.object({
+    summary_polyline: z.string().nullable(),
+  }).optional(),
 });
 export type StravaActivity = z.infer<typeof StravaActivitySchema>;

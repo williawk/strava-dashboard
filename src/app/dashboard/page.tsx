@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { type StravaActivity } from "@/lib/strava";
 import SummaryCards from "@/components/SummaryCards";
 import RecentRides from "@/components/RecentRides";
@@ -9,6 +10,16 @@ import DistanceChart from "@/components/DistanceChart";
 import SpeedChart from "@/components/SpeedChart";
 import ElevationChart from "@/components/ElevationChart";
 import PersonalRecords from "@/components/PersonalRecords";
+
+const RideHeatmap = dynamic(() => import("@/components/RideHeatmap"), {
+  ssr: false,
+  loading: () => (
+    <section>
+      <h2 className="text-xl font-semibold text-foreground mb-4">Ride Map</h2>
+      <div className="bg-foreground/5 rounded-xl animate-pulse" style={{ height: 500 }} />
+    </section>
+  ),
+});
 
 export default function Dashboard() {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
@@ -84,6 +95,8 @@ export default function Dashboard() {
         </div>
 
         <ElevationChart activities={sortedRecent} />
+
+        <RideHeatmap activities={activities} />
 
         <RecentRides activities={activities} />
       </div>
