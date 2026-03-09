@@ -10,6 +10,7 @@ import DistanceChart from "@/components/DistanceChart";
 import SpeedChart from "@/components/SpeedChart";
 import ElevationChart from "@/components/ElevationChart";
 import PersonalRecords from "@/components/PersonalRecords";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const RideHeatmap = dynamic(() => import("@/components/RideHeatmap"), {
   ssr: false,
@@ -75,14 +76,17 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-foreground">Cycling Dashboard</h1>
-          <form action="/api/auth/logout" method="POST">
-            <button
-              type="submit"
-              className="text-sm text-foreground/50 hover:text-foreground transition-colors"
-            >
-              Disconnect
-            </button>
-          </form>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <form action="/api/auth/logout" method="POST">
+              <button
+                type="submit"
+                className="text-sm text-foreground/50 hover:text-foreground transition-colors"
+              >
+                Disconnect
+              </button>
+            </form>
+          </div>
         </div>
 
         <SummaryCards activities={activities} />

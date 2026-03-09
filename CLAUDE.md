@@ -31,6 +31,8 @@ src/
     DistanceChart.tsx      # Weekly distance bar chart (ISO week start via ms arithmetic)
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
+    ThemeProvider.tsx      # Client wrapper for next-themes provider
+    ThemeToggle.tsx        # Dark/light theme toggle with sun/moon icons
     RideHeatmap.tsx       # Leaflet map with all ride routes as polylines
   lib/
     strava.ts             # Strava API client with Zod-validated responses
@@ -55,7 +57,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Token refresh uses promise-based mutex to serialize concurrent requests, with retry logic for cookie persistence (Strava refresh tokens are single-use)
 - Filters activities to cycling only via `sport_type` field (not `type`): Ride, VirtualRide, MountainBikeRide, GravelRide
 - Fetches up to 200 activities (2 pages of 100)
-- Dark mode via Tailwind `prefers-color-scheme`
+- Dark mode via `next-themes` with class-based toggling (`darkMode: 'selector'` via `@custom-variant`), two-state toggle (dark/light, dark default), persisted to localStorage
 - Strava orange (#FC4C02) used as accent color via Tailwind arbitrary value `text-[#FC4C02]`
 - Personal records use config-driven array with type-safe `NumericField` union for field access
 - Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
@@ -85,7 +87,7 @@ npm run test:watch # Vitest in watch mode
 - Leaflet (react-leaflet) with Canvas renderer, free CartoDB tiles (no API key)
 - `src/lib/polyline.ts` decodes Google encoded polylines (~20 lines, shift overflow guard, try/catch safety)
 - `src/components/RideHeatmap.tsx` renders all routes as Strava orange (#FC4C02) polylines at 0.6 opacity
-- `useSyncExternalStore` for dark mode detection; `TileLayer key` forces tile remount on theme change
+- Uses `resolvedTheme` from `next-themes` for dark mode detection; `TileLayer key` forces tile remount on theme change
 - `next/dynamic` with `ssr: false` to avoid Leaflet SSR crashes; loading skeleton prevents layout shift
 - Sticky tooltips show ride name, distance, and date using existing format helpers
 - Layout: full-width between ElevationChart and RecentRides, receives full `activities` array

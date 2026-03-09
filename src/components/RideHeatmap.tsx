@@ -1,28 +1,13 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo } from "react";
+import { useTheme } from "next-themes";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Polyline, Tooltip } from "react-leaflet";
 import { latLngBounds, latLng } from "leaflet";
 import { type StravaActivity } from "@/lib/strava";
 import { decodePolyline } from "@/lib/polyline";
 import { formatDistance, formatDate } from "@/lib/format";
-
-const darkModeQuery = "(prefers-color-scheme: dark)";
-
-function subscribeDarkMode(callback: () => void) {
-  const mq = window.matchMedia(darkModeQuery);
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
-}
-
-function getDarkModeSnapshot() {
-  return window.matchMedia(darkModeQuery).matches;
-}
-
-function getDarkModeServerSnapshot() {
-  return false;
-}
 
 interface Route {
   id: number;
@@ -33,7 +18,8 @@ interface Route {
 }
 
 export default function RideHeatmap({ activities }: { activities: StravaActivity[] }) {
-  const isDark = useSyncExternalStore(subscribeDarkMode, getDarkModeSnapshot, getDarkModeServerSnapshot);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const routes = useMemo<Route[]>(() => {
     return activities
