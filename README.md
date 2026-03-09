@@ -11,6 +11,7 @@ A personal cycling dashboard built with Next.js that connects to the Strava API 
 - **Distance Chart** — Weekly distance bar chart
 - **Speed Chart** — Average speed trend line chart
 - **Elevation Chart** — Elevation gain per ride area chart
+- **Ride Heatmap** — Interactive Leaflet map showing all ride routes as polylines
 - **Recent Rides** — Table of your last 20 rides
 - **Dark Mode** — Automatic via system preference
 
@@ -19,6 +20,7 @@ A personal cycling dashboard built with Next.js that connects to the Strava API 
 - [Next.js 16](https://nextjs.org/) (App Router) with TypeScript
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Recharts](https://recharts.org/) for charts
+- [Leaflet](https://leafletjs.com/) / [react-leaflet](https://react-leaflet.js.org/) for ride heatmap
 - [Zod](https://zod.dev/) for runtime API response validation
 
 ## Getting Started
@@ -66,6 +68,7 @@ npm run dev        # Start dev server on localhost:3000
 npm run build      # Production build
 npm run typecheck  # TypeScript type checking
 npm run lint       # ESLint
+npm run test       # Vitest unit tests
 ```
 
 ## Project Structure
@@ -87,10 +90,13 @@ src/
     DistanceChart.tsx            # Weekly distance chart
     SpeedChart.tsx               # Speed trend chart
     ElevationChart.tsx           # Elevation chart
+    RideHeatmap.tsx              # Ride route heatmap
   lib/
     strava.ts                    # Strava API client with Zod validation
     tokens.ts                    # Cookie-based token storage with auto-refresh
     format.ts                    # Formatting helpers
+    polyline.ts                  # Google encoded polyline decoder
+    __tests__/                   # Unit tests
 ```
 
 ## Security
@@ -103,6 +109,6 @@ src/
 
 ## CI/CD
 
-- **GitHub Actions** runs typecheck, lint, and build on every push and PR to `master`
+- **GitHub Actions** runs typecheck, lint, test, and build on every push and PR to `master`
 - **Dependabot** opens weekly PRs for dependency updates
 - **Branch protection** requires the build check to pass before merging

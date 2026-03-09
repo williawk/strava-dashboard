@@ -10,7 +10,7 @@
 ## Project Structure
 ```
 .github/
-  workflows/ci.yml        # CI pipeline: typecheck, lint, build
+  workflows/ci.yml        # CI pipeline: typecheck, lint, test, build
   dependabot.yml           # Automated dependency update PRs
 docs/
   dashboard-preview.png   # README screenshot of dashboard with dummy data
@@ -73,7 +73,7 @@ npm run test:watch # Vitest in watch mode
 ```
 
 ## CI/CD
-- **GitHub Actions** runs on every push and PR to `master`: typecheck → lint → build
+- **GitHub Actions** runs on every push and PR to `master`: typecheck → lint → test → build
 - Workflow at `.github/workflows/ci.yml` with SHA-pinned actions (v6 checkout, v6 setup-node), `contents: read` permissions, and concurrency control (stale runs auto-cancel)
 - **Dependabot** (`.github/dependabot.yml`) opens weekly PRs for npm and GitHub Actions dependency updates (max 5 open PRs per ecosystem)
 - React ecosystem packages (`react`, `react-dom`, `@types/react`, `@types/react-dom`) are grouped into a single PR to avoid peer dependency conflicts
