@@ -68,15 +68,15 @@ const icons: Record<(typeof cycleOrder)[number], React.ReactNode> = {
 };
 
 const labels: Record<(typeof cycleOrder)[number], string> = {
-  system: "Switch to light mode",
-  light: "Switch to dark mode",
-  dark: "Switch to system theme",
+  system: "Theme: auto. Switch to light mode",
+  light: "Theme: light. Switch to dark mode",
+  dark: "Theme: dark. Switch to auto",
 };
 
 const titles: Record<(typeof cycleOrder)[number], string> = {
-  system: "Theme: system",
-  light: "Theme: light",
-  dark: "Theme: dark",
+  system: "Theme: auto — click for light",
+  light: "Theme: light — click for dark",
+  dark: "Theme: dark — click for auto",
 };
 
 export function ThemeToggle() {
@@ -85,11 +85,16 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="min-w-[44px] min-h-[44px]" aria-hidden="true" />
+      <div
+        className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+        aria-hidden="true"
+      />
     );
   }
 
-  const current = (theme ?? "system") as (typeof cycleOrder)[number];
+  const current = cycleOrder.includes(theme as (typeof cycleOrder)[number])
+    ? (theme as (typeof cycleOrder)[number])
+    : "system";
   const nextTheme =
     cycleOrder[(cycleOrder.indexOf(current) + 1) % cycleOrder.length];
 
@@ -97,7 +102,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(nextTheme)}
-      className="min-w-[44px] min-h-[44px] flex items-center justify-center text-foreground/50 hover:text-foreground transition-colors"
+      className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-foreground/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:ring-offset-2 transition-colors"
       aria-label={labels[current]}
       title={titles[current]}
     >

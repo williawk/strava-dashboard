@@ -1,6 +1,13 @@
+"use client";
+
+import { ThemeToggle } from "@/components/ThemeToggle";
+
 export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="fixed top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="text-center space-y-8 p-8">
         <h1 className="text-4xl font-bold text-foreground">
           Cycling Dashboard
