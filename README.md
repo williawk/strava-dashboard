@@ -13,7 +13,7 @@ A personal cycling dashboard built with Next.js that connects to the Strava API 
 - **Elevation Chart** — Elevation gain per ride area chart
 - **Ride Heatmap** — Interactive Leaflet map showing all ride routes as polylines
 - **Recent Rides** — Table of your last 20 rides
-- **Dark Mode** — Automatic via system preference
+- **Dark/Light Mode** — Toggle between dark and light themes, persisted across sessions
 
 ## Tech Stack
 
@@ -91,6 +91,8 @@ src/
     SpeedChart.tsx               # Speed trend chart
     ElevationChart.tsx           # Elevation chart
     RideHeatmap.tsx              # Ride route heatmap
+    ThemeProvider.tsx             # Dark/light mode provider
+    ThemeToggle.tsx               # Theme toggle button
   lib/
     strava.ts                    # Strava API client with Zod validation
     tokens.ts                    # Cookie-based token storage with auto-refresh

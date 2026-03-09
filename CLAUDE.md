@@ -5,6 +5,7 @@
 - **Tailwind CSS** for styling
 - **Recharts** for charts/graphs
 - **Zod** for runtime API response validation
+- **next-themes** for dark/light mode toggle
 - **npm** as package manager
 
 ## Project Structure
@@ -17,7 +18,7 @@ docs/
   screenshot-demo.html    # Standalone HTML demo used to generate the screenshot
 src/
   app/
-    page.tsx              # Landing page (server component, no client JS)
+    page.tsx              # Landing page (client component, floating theme toggle)
     dashboard/page.tsx    # Main dashboard (client component, pre-sorts data for charts)
     api/
       auth/strava/route.ts    # Redirects to Strava OAuth
@@ -83,15 +84,6 @@ npm run test:watch # Vitest in watch mode
 - **Branch protection** on `master`: requires `build` status check to pass (strict mode — branch must be up-to-date), no PR reviews required, enforce admins disabled
 - Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
 
-## Ride Heatmap ([#18](https://github.com/williawk/strava-dashboard/issues/18))
-- Leaflet (react-leaflet) with Canvas renderer, free CartoDB tiles (no API key)
-- `src/lib/polyline.ts` decodes Google encoded polylines (~20 lines, shift overflow guard, try/catch safety)
-- `src/components/RideHeatmap.tsx` renders all routes as Strava orange (#FC4C02) polylines at 0.6 opacity
-- Uses `resolvedTheme` from `next-themes` for dark mode detection; `TileLayer key` forces tile remount on theme change
-- `next/dynamic` with `ssr: false` to avoid Leaflet SSR crashes; loading skeleton prevents layout shift
-- Sticky tooltips show ride name, distance, and date using existing format helpers
-- Layout: full-width between ElevationChart and RecentRides, receives full `activities` array
-- Zod schema: `map.summary_polyline` is `.nullable().optional()` (null = no GPS, undefined = field missing)
 
 ## Issue Tracking
 - All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
