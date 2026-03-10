@@ -16,6 +16,7 @@
 docs/
   dashboard-preview.png   # README screenshot of dashboard with dummy data
   screenshot-demo.html    # Standalone HTML demo used to generate the screenshot
+  mockups/                # Standalone HTML mockups for reviewing features before implementation
 src/
   app/
     page.tsx              # Landing page (client component, floating theme toggle)
@@ -64,6 +65,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Dashboard pre-sorts activities once via `useMemo` and passes sorted data to SpeedChart/ElevationChart
 - Dashboard layout order: SummaryCards → PersonalRecords → Charts → RideHeatmap → RecentRides
 - Dashboard uses `next/link` `<Link>` for internal navigation (enforced by `@next/next/no-html-link-for-pages` lint rule)
+- UX mockups are standalone HTML files (pure CSS/JS, no external CDN scripts — browsers block them on `file://` protocol)
 
 ## Development
 ```bash
