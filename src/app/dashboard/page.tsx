@@ -10,6 +10,7 @@ import DistanceChart from "@/components/DistanceChart";
 import SpeedChart from "@/components/SpeedChart";
 import ElevationChart from "@/components/ElevationChart";
 import PersonalRecords from "@/components/PersonalRecords";
+import YearComparisonChart from "@/components/YearComparisonChart";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const RideHeatmap = dynamic(() => import("@/components/RideHeatmap"), {
@@ -92,6 +93,8 @@ export default function Dashboard() {
         <SummaryCards activities={activities} />
 
         <PersonalRecords activities={activities} />
+
+        <YearComparisonChart activities={activities} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DistanceChart activities={activities} />
