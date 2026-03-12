@@ -34,10 +34,12 @@ src/
     SpeedChart.tsx         # Average speed trend line chart
     ElevationChart.tsx     # Elevation gain per ride area chart
     ThemeProvider.tsx      # Client wrapper for next-themes provider
+    YearComparisonChart.tsx # Year-over-year monthly grouped bar chart with metric toggle
     ThemeToggle.tsx        # Dark/light theme toggle with sun/moon icons
     RideHeatmap.tsx       # Leaflet map with all ride routes as polylines
   lib/
     strava.ts             # Strava API client with Zod-validated responses
+    year-comparison.ts    # Year-over-year data aggregation, metric formatting, summary text
     tokens.ts             # Cookie-based token storage with auto-refresh and size checks
     format.ts             # Formatting helpers (distance, duration, speed, elevation, date)
     polyline.ts           # Google encoded polyline decoder
