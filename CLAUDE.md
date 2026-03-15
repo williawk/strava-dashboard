@@ -4,8 +4,10 @@
 - **Next.js 16** (App Router) with TypeScript
 - **Tailwind CSS** for styling
 - **Recharts** for charts/graphs
+- **Leaflet** + **React Leaflet** for ride heatmap
 - **Zod** for runtime API response validation
 - **next-themes** for dark/light mode toggle
+- **Vitest** for unit tests
 - **npm** as package manager
 
 ## Project Structure
@@ -16,9 +18,12 @@
 docs/
   dashboard-preview.png   # README screenshot of dashboard with dummy data
   screenshot-demo.html    # Standalone HTML demo used to generate the screenshot
+  year-comparison-chart.html # Standalone mockup for year-over-year chart
   mockups/                # Standalone HTML mockups for reviewing features before implementation
 src/
   app/
+    layout.tsx            # Root layout with ThemeProvider, Geist fonts, metadata
+    globals.css           # Global styles and Tailwind imports
     page.tsx              # Landing page (client component, floating theme toggle)
     dashboard/page.tsx    # Main dashboard (client component, pre-sorts data for charts)
     api/
@@ -43,7 +48,10 @@ src/
     tokens.ts             # Cookie-based token storage with auto-refresh and size checks
     format.ts             # Formatting helpers (distance, duration, speed, elevation, date)
     polyline.ts           # Google encoded polyline decoder
-    __tests__/            # Vitest unit tests
+    __tests__/
+      polyline.test.ts    # Polyline decoder tests
+      strava-schema.test.ts # Zod schema validation tests
+      year-comparison.test.ts # Year-over-year aggregation tests
 ```
 
 ## Environment Variables
@@ -68,6 +76,7 @@ Stored in `.env.local` (gitignored). See `.env.example` for template.
 - Dashboard layout order: SummaryCards → PersonalRecords → Charts → RideHeatmap → RecentRides
 - Dashboard uses `next/link` `<Link>` for internal navigation (enforced by `@next/next/no-html-link-for-pages` lint rule)
 - UX mockups are standalone HTML files (pure CSS/JS, no external CDN scripts — browsers block them on `file://` protocol)
+- Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
 
 ## Development
 ```bash
@@ -86,8 +95,6 @@ npm run test:watch # Vitest in watch mode
 - React ecosystem packages (`react`, `react-dom`, `@types/react`, `@types/react-dom`) are grouped into a single PR to avoid peer dependency conflicts
 - GitHub Actions PRs are kept separate (only two actions, independent of each other)
 - **Branch protection** on `master`: requires `build` status check to pass (strict mode — branch must be up-to-date), no PR reviews required, enforce admins disabled
-- Chart tooltip formatters use `as never` cast to handle recharts' wide `Formatter<ValueType>` type — update the cast if recharts changes the formatter signature again
-
 
 ## Issue Tracking
 - All bugs, improvements, and tasks are tracked as [GitHub Issues](https://github.com/williawk/strava-dashboard/issues)
